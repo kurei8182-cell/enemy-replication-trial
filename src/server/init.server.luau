@@ -209,6 +209,39 @@ Players.PlayerAdded:Connect(function(player)
     end
 end)
 
+-- [ADMIN CONTROLS] --
+local function setRate(n)
+    currentSpawnRate = math.clamp(n, 0, 10)
+    spawnAccumulator = 0
+end
+
+local function setCap(n)
+    currentMaxEnemies = math.clamp(math.floor(n), 0, 100)
+end
+
+local function killAll()
+    local ids = {}
+    for id in enemies do
+        table.insert(ids, id)
+    end
+    for _, id in ids do
+        removeEnemy(id)
+    end
+end
+
+Remotes.AdminAction.OnServerEvent:Connect(function(player, action, value)
+    if action == "setRate" and type(value) == "number" then
+        setRate(value)
+        print(("[admin] %s set spawn rate to %.2f/s"):format(player.Name, currentSpawnRate))
+    elseif action == "setCap" and type(value) == "number" then
+        setCap(value)
+        print(("[admin] %s set cap to %d"):format(player.Name, currentMaxEnemies))
+    elseif action == "killAll" then
+        killAll()
+        print(("[admin] %s killed all enemies"):format(player.Name))
+    end
+end)
+
 print(("[server] spawner online, platform=%s, rate=%d/s, cap=%d"):format(
     platform.Name, currentSpawnRate, currentMaxEnemies
 ))
