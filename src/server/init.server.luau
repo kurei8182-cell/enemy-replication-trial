@@ -4,6 +4,7 @@ local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local Snapshot = require(ReplicatedStorage.Shared.Snapshot)
 
 local enemies = {}
 local nextId = 1
@@ -111,6 +112,9 @@ end
 local targetReevalAccumulator = 0
 local TARGET_REEVAL_INTERVAL = 0.25
 
+local snapshotAccumulator = 0
+local SNAPSHOT_INTERVAL = 1 / Config.Enemy.SnapshotRate
+
 RunService.Heartbeat:Connect(function(dt)
     spawnAccumulator += dt
     if currentSpawnRate > 0 then
@@ -170,6 +174,13 @@ RunService.Heartbeat:Connect(function(dt)
             local clampedZ = math.clamp(enemy.position.Z, center.Z - PLATFORM_HALF, center.Z + PLATFORM_HALF)
             enemy.position = Vector3.new(clampedX, enemy.position.Y, clampedZ)
         end
+    end
+
+    snapshotAccumulator += dt
+    if snapshotAccumulator >= SNAPSHOT_INTERVAL then
+        snapshotAccumulator = 0
+        local buf = Snapshot.encode(enemies)
+        Remotes.EnemySnapshot:FireAllClients(buf)
     end
 end)
 -- [STEP 2 REPLACEMENT ENDS HERE] --
