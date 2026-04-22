@@ -101,7 +101,6 @@ local function spawnEnemy()
     )
 end
 
--- New Removal Function
 local function removeEnemy(id)
     if not enemies[id] then return end
     enemies[id] = nil
@@ -156,7 +155,9 @@ RunService.Heartbeat:Connect(function(dt)
                 local dist = toTarget.Magnitude
                 
                 if dist > 0.1 then
-                    enemy.velocity = toTarget.Unit * Config.Enemy.BaseSpeed
+                    -- Updated Logic: Smaller enemies move faster
+                    local speedMultiplier = 2 - enemy.variation.scale
+                    enemy.velocity = toTarget.Unit * Config.Enemy.BaseSpeed * speedMultiplier
                 else
                     enemy.velocity = Vector3.zero
                 end
