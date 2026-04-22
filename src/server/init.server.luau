@@ -13,8 +13,6 @@ local currentSpawnRate = Config.Spawn.Rate
 local currentMaxEnemies = Config.Spawn.Max
 
 local platform = workspace:WaitForChild(Config.Platform.Name)
-
--- [STEP 1 ADDITIONS] --
 local PLATFORM_HALF = Config.Platform.Size / 2
 
 local function isOnPlatform(pos: Vector3): boolean
@@ -27,6 +25,7 @@ end
 local function getClosestPlayerOnPlatform(fromPos: Vector3): (Player?, number)
     local closest = nil
     local closestDist = math.huge
+
     for _, player in Players:GetPlayers() do
         local char = player.Character
         if not char then continue end
@@ -113,7 +112,6 @@ local function countEnemies()
     return n
 end
 
--- [LOOP LOGIC] --
 local targetReevalAccumulator = 0
 local TARGET_REEVAL_INTERVAL = 0.25
 
@@ -155,7 +153,6 @@ RunService.Heartbeat:Connect(function(dt)
                 local dist = toTarget.Magnitude
                 
                 if dist > 0.1 then
-                    -- Updated Logic: Smaller enemies move faster
                     local speedMultiplier = 2 - enemy.variation.scale
                     enemy.velocity = toTarget.Unit * Config.Enemy.BaseSpeed * speedMultiplier
                 else
@@ -210,7 +207,6 @@ Players.PlayerAdded:Connect(function(player)
     end
 end)
 
--- [ADMIN CONTROLS] --
 local function setRate(n)
     currentSpawnRate = math.clamp(n, 0, 10)
     spawnAccumulator = 0

@@ -7,8 +7,6 @@ local Snapshot = require(ReplicatedStorage.Shared.Snapshot)
 local Config = require(ReplicatedStorage.Shared.Config)
 local AdminUI = require(script:WaitForChild("AdminUI"))
 
-local player = Players.LocalPlayer
-
 local enemyFolder = Instance.new("Folder")
 enemyFolder.Name = "ClientEnemies"
 enemyFolder.Parent = workspace
@@ -84,7 +82,6 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
--- Admin UI Wiring
 local ui = AdminUI.mount({
     rate = Config.Spawn.Rate,
     cap = Config.Spawn.Max,
