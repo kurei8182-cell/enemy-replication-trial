@@ -13,9 +13,9 @@ Enemy spawner system with custom buffer-packed replication over UnreliableRemote
 
 ## Structure
 
-- `src/server/` — spawner, chase/targeting, snapshot broadcast, admin handler
-- `src/client/` — rendering, interpolation, click handling, admin UI
-- `src/shared/` — Config, Types, Remotes, Snapshot encoder/decoder
+- `src/server/`: spawner, chase/targeting, snapshot broadcast, admin handler
+- `src/client/`: rendering, interpolation, click handling, admin UI
+- `src/shared/`: Config, Types, Remotes, Snapshot encoder/decoder
 
 ## Approach
 
