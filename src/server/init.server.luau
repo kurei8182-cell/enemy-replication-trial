@@ -14,7 +14,7 @@ local currentMaxEnemies = Config.Spawn.Max
 
 local platform = workspace:WaitForChild(Config.Platform.Name)
 
--- [STEP 1 ADDITIONS START HERE] --
+-- [STEP 1 ADDITIONS] --
 local PLATFORM_HALF = Config.Platform.Size / 2
 
 local function isOnPlatform(pos: Vector3): boolean
@@ -57,7 +57,6 @@ local function getPlayerRootPos(userId: number): Vector3?
     
     return root.Position
 end
--- [STEP 1 ADDITIONS END HERE] --
 
 local function rollVariation()
     local colors = Config.Variations.Colors
@@ -102,13 +101,20 @@ local function spawnEnemy()
     )
 end
 
+-- New Removal Function
+local function removeEnemy(id)
+    if not enemies[id] then return end
+    enemies[id] = nil
+    Remotes.EnemyRemoved:FireAllClients(id)
+end
+
 local function countEnemies()
     local n = 0
     for _ in enemies do n += 1 end
     return n
 end
 
--- [STEP 2 REPLACEMENT STARTS HERE] --
+-- [LOOP LOGIC] --
 local targetReevalAccumulator = 0
 local TARGET_REEVAL_INTERVAL = 0.25
 
@@ -183,7 +189,25 @@ RunService.Heartbeat:Connect(function(dt)
         Remotes.EnemySnapshot:FireAllClients(buf)
     end
 end)
--- [STEP 2 REPLACEMENT ENDS HERE] --
+
+Remotes.EnemyClicked.OnServerEvent:Connect(function(player, id)
+    if type(id) ~= "number" then return end
+    if not enemies[id] then return end
+    print(("[server] player %s clicked enemy %d"):format(player.Name, id))
+end)
+
+Players.PlayerAdded:Connect(function(player)
+    for id, enemy in enemies do
+        Remotes.EnemySpawned:FireClient(
+            player,
+            id,
+            enemy.position,
+            enemy.variation.color,
+            enemy.variation.material.Value,
+            enemy.variation.scale
+        )
+    end
+end)
 
 print(("[server] spawner online, platform=%s, rate=%d/s, cap=%d"):format(
     platform.Name, currentSpawnRate, currentMaxEnemies
